@@ -1,0 +1,64 @@
+# Configuration for the skin lesion classification pipeline.
+# Every value the pipeline depends on lives here rather than in code.
+
+data:
+  dataverse_doi: "10.7910/DVN/DBW86T"
+  # All seven HAM10000 diagnostic categories.
+  classes:
+    - akiec
+    - bcc
+    - bkl
+    - df
+    - mel
+    - nv
+    - vasc
+  min_images_per_class: 50
+  # null keeps every contributing source (vidir_modern, vidir_molemax,
+  # vienna_dias, rosendahl). See config/smoke.yaml for the
+  # Australian-only slice.
+  source_filter: null
+
+split:
+  train_fraction: 0.70
+  val_fraction: 0.15
+  test_fraction: 0.15
+  random_seed: 42
+
+model:
+  # Frozen-embedding classification, the same frugal-AI approach validated
+  # on the nudibranch-id project: a linear head on frozen DINOv2 features
+  # rather than fine-tuning a randomly-perturbed backbone. See the README
+  # for why, and for the honest caveat about what's untested at this scale.
+  backbone: vit_small_patch14_dinov2.lvd142m
+  pretrained: true
+  image_size: 224
+  dropout: 0.1
+
+training:
+  epochs: 15
+  batch_size: 32
+  learning_rate: 0.0005
+  weight_decay: 0.01
+  # warmup_frozen_epochs == epochs: the backbone is never unfrozen.
+  warmup_frozen_epochs: 15
+  label_smoothing: 0.1
+  num_workers: 4
+  early_stopping_patience: 4
+
+evaluation:
+  top_k: 3
+  calibration_bins: 15
+  abstain_threshold: 0.5
+  # Malignant or pre-malignant: a melanoma, basal cell carcinoma or actinic
+  # keratosis called benign is the failure mode that actually matters.
+  malignant_classes:
+    - mel
+    - bcc
+    - akiec
+
+paths:
+  data_dir: data
+  raw_dir: data/raw
+  images_dir: data/images
+  metadata_file: data/raw/HAM10000_metadata.tab
+  artifacts_dir: artifacts

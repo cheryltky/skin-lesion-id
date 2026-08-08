@@ -1,0 +1,58 @@
+# A small, fast, verifiably-Australian run for checking the pipeline end
+# to end. Restricted to the Rosendahl source: images from a University of
+# Queensland-affiliated skin cancer practice, ethics-approved and 100%
+# histopathologically confirmed -- the most reliable ground truth in
+# HAM10000, not just a geographic subset.
+
+data:
+  dataverse_doi: "10.7910/DVN/DBW86T"
+  classes:
+    - akiec
+    - bcc
+    - bkl
+    - df
+    - mel
+    - nv
+    - vasc
+  # df (30 images) and vasc (3 images) in this subset fall below this and
+  # are dropped at train time, leaving 5 classes: akiec, bcc, bkl, mel, nv.
+  min_images_per_class: 50
+  source_filter: rosendahl
+
+split:
+  train_fraction: 0.70
+  val_fraction: 0.15
+  test_fraction: 0.15
+  random_seed: 42
+
+model:
+  backbone: vit_small_patch14_dinov2.lvd142m
+  pretrained: true
+  image_size: 224
+  dropout: 0.1
+
+training:
+  epochs: 10
+  batch_size: 16
+  learning_rate: 0.0005
+  weight_decay: 0.01
+  warmup_frozen_epochs: 10
+  label_smoothing: 0.1
+  num_workers: 0
+  early_stopping_patience: 4
+
+evaluation:
+  top_k: 3
+  calibration_bins: 10
+  abstain_threshold: 0.5
+  malignant_classes:
+    - mel
+    - bcc
+    - akiec
+
+paths:
+  data_dir: data
+  raw_dir: data/raw
+  images_dir: data/images
+  metadata_file: data/raw/HAM10000_metadata.tab
+  artifacts_dir: artifacts/smoke

@@ -1,0 +1,32 @@
+# Environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Build metadata
+*.egg-info/
+build/
+dist/
+
+# HAM10000 is downloaded fresh from Harvard Dataverse (non-commercial
+# academic use per its terms) rather than redistributed here, and model
+# artefacts are reproducible from a training run.
+# Anchored with a leading slash so these match only the top-level
+# directories, not the src/skinlesion/data package.
+/data/
+/artifacts/*
+*.pt
+*.pth
+
+# Exception: the checkpoint the Streamlit Cloud deployment loads.
+!/artifacts/model.pt
+
+# Notebook noise
+.ipynb_checkpoints/
+
+# Tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
