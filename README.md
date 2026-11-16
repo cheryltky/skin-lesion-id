@@ -1,5 +1,7 @@
 # Can an image classifier catch skin cancer, and can it tell when it should not answer?
 
+![Cover](assets/cover.png)
+
 A classifier for dermatoscopic images of skin lesions, trained on
 histopathology-confirmed cases, with calibrated confidence and a clinically
 motivated recall metric.
